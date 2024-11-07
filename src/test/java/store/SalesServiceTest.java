@@ -1,0 +1,6 @@
+package store;
+
+class SalesServiceTest {
+
+
+}
