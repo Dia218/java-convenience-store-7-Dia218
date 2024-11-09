@@ -1,7 +1,6 @@
 package store;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,16 +11,8 @@ public class FileContentReader {
     private final String PROMOTION_FILEPATH = "src/main/resources/promotion.md";
     private final String ERROR_MESSAGE_FILE = "[ERROR] 파일을 읽는 도중 오류가 발생했습니다";
 
-    public List<ProductDTO> readProducts() {
-        List<ProductDTO> productList = new ArrayList<>();
-
-        List<String> lines = readFileLines(PRODUCTS_FILEPATH);
-        for (int i = 1; i < lines.size(); i++) {
-            ProductDTO product = parseProduct(lines.get(i));
-            productList.add(product);
-        }
-
-        return productList;
+    public List<String> readProductFile() {
+        return readFileLines(PRODUCTS_FILEPATH);
     }
 
     private List<String> readFileLines(String filePath) {
@@ -37,17 +28,6 @@ public class FileContentReader {
         }
 
         return lines;
-    }
-
-    private ProductDTO parseProduct(String line) {
-        String[] fields = line.split(",");
-
-        String name = fields[0];
-        int price = Integer.parseInt(fields[1]);
-        int quantity = Integer.parseInt(fields[2]);
-        String promotion = fields[3];
-
-        return new ProductDTO(name, price, quantity, promotion);
     }
 
 }
