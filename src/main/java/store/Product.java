@@ -8,18 +8,18 @@ public class Product {
     private final String name;
     private final int price;
     private int vanillaQuantity;
-    private String promotion;
+    private String promotionInfo;
     private int promotionQuantity;
 
-    public Product(String name, int price, int quantity, String promotion) {
+    public Product(String name, int price, int quantity, String promotionInfo) {
         this.name = name;
         this.price = price;
 
-        if(promotion == null) {
+        if(promotionInfo == null) {
             this.vanillaQuantity = quantity;
         }
-        if(promotion != null) {
-            this.promotion = promotion;
+        if(promotionInfo != null) {
+            this.promotionInfo = promotionInfo;
             this.promotionQuantity = quantity;
         }
     }
@@ -45,7 +45,7 @@ public class Product {
 
     public static Product findByName(List<Product> productList, String name) {
         for (Product product : productList) {
-            if (product.getName().equals(name)) {
+            if (product.name.equals(name)) {
                 return product;
             }
         }
@@ -56,31 +56,30 @@ public class Product {
         return name;
     }
 
-    public String checkPromotion() {
-        return promotion;
+    public String getPromotionInfo() {
+        return promotionInfo;
+    }
+
+    public int getStockPromotionQuantity() {
+        return promotionQuantity;
+    }
+
+    public static void updateProduct(List<Product> productList, Product product) {
+        Product prevProduct = findPrevProduct(productList, product);
+        updateInfo(product, prevProduct);
     }
 
     public String getInfoForDisplay() {
         String info = "";
-        if(promotion != null) {
-            info += "- " + name + " " + formatPrice() + " " + formatQuantity(promotionQuantity) + " " + promotion  + "\n";
+        if(promotionInfo != null) {
+            info += "- " + name + " " + formatPrice() + " " + formatQuantity(promotionQuantity) + " " + promotionInfo + "\n";
         }
         info += "- " + name + " " + formatPrice() + " " + formatQuantity(vanillaQuantity);
         return info;
     }
 
-    public boolean availSaleQuantity(int orderQuantity) {
+    public boolean isAvailSaleQuantity(int orderQuantity) {
         return (this.vanillaQuantity + this.promotionQuantity) >= orderQuantity;
-    }
-
-    public void updateQuantity(Product product) {
-        if(promotion == null && product.promotion != null) {
-            this.promotion = product.promotion;
-            this.promotionQuantity = product.promotionQuantity;
-        }
-        if(promotion != null && product.promotion == null) {
-            this.vanillaQuantity = product.vanillaQuantity;
-        }
     }
 
     public void reduceQuantity(int orderQuantity) {
@@ -90,6 +89,25 @@ public class Product {
             orderQuantity -= orderPromotionQuantity;
             reduceVanillaQuantity(orderQuantity);
         }
+    }
+
+    private static void updateInfo(Product product, Product prevProduct) {
+        if(prevProduct.promotionInfo == null && product.promotionInfo != null) {
+            prevProduct.promotionInfo = product.promotionInfo;
+            prevProduct.promotionQuantity = product.promotionQuantity;
+        }
+        if(prevProduct.promotionInfo != null && product.promotionInfo == null) {
+            prevProduct.vanillaQuantity = product.vanillaQuantity;
+        }
+    }
+
+    private static Product findPrevProduct(List<Product> productList, Product targetProduct) {
+        for (Product product : productList) {
+            if (product.name.equals(targetProduct.name)) {
+                return product;
+            }
+        }
+        return null;
     }
 
     private String formatPrice() {
@@ -109,5 +127,4 @@ public class Product {
     private void reduceVanillaQuantity(int orderVanillaQuantity) {
         this.vanillaQuantity -= orderVanillaQuantity;
     }
-
 }

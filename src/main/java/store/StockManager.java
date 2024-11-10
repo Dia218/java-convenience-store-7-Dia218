@@ -27,22 +27,18 @@ public class StockManager {
 
     private void initStock() {
         List<String> lines = new FileContentReader().readProductFile();
-        List<Product> products = parseProducts(lines);
-        productList.addAll(products);
+        addAllProducts(lines);
     }
 
-    private List<Product> parseProducts(List<String> lines) {
-        List<Product> products = new ArrayList<>();
+    private void addAllProducts(List<String> lines) {
         for (int i = 1; i < lines.size(); i++) {
-            addProductList(parseProduct(lines.get(i)));
+            addProduct(parseProduct(lines.get(i)));
         }
-        return products;
     }
 
-    private void addProductList(Product product) {
+    private void addProduct(Product product) {
         if(productList.contains(product)) {
-            Product prevProduct = Product.findByName(productList, product.getName());
-            prevProduct.updateQuantity(product);
+            Product.updateProduct(productList, product);
         }
         productList.add(product);
     }
@@ -53,17 +49,16 @@ public class StockManager {
         String name = fields[0];
         int price = Integer.parseInt(fields[1]);
         int quantity = Integer.parseInt(fields[2]);
-        String promotion = fields[3];
+        String promotionInfo = fields[3];
 
-        return new Product(name, price, quantity, promotion);
+        return new Product(name, price, quantity, promotionInfo);
     }
 }
 
 class StockView {
-    public static void printStock(List<Product> productList) {
+    static void printStock(List<Product> productList) {
         printWelcome();
         printProductList(productList);
-        System.out.println();
     }
 
     private static void printWelcome() {

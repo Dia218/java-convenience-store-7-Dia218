@@ -56,20 +56,20 @@ public class OrderHandler {
 class OrderValidator {
     final static String ORDER_REGEX = "\\[[a-zA-Z가-힣0-9]+-\\d+\\]";
 
-    public static void checkOrderForm(String order) {
+    static void checkOrderForm(String order) {
         if(!order.matches(ORDER_REGEX)) {
             throwException(ERROR_ORDER_FORM);
         }
     }
 
-    public static void checkOrderName(StockManager stockManager, String name) {
+    static void checkOrderName(StockManager stockManager, String name) {
         if(!stockManager.containsProduct(name)) {
             throwException(ERROR_ORDER_NAME);
         }
     }
 
-    public static void checkOrderQuantity(Product product, int orderQuantity) {
-        if(!product.availSaleQuantity(orderQuantity)) {
+    static void checkOrderQuantity(Product product, int orderQuantity) {
+        if(!product.isAvailSaleQuantity(orderQuantity)) {
             throwException(ERROR_ORDER_QUANTITY);
         }
     }
