@@ -1,6 +1,7 @@
 package store;
 
 import store.view.InputView;
+import store.view.ReceiptPrinter;
 
 import java.util.HashMap;
 
@@ -22,7 +23,7 @@ public class Application {
             HashMap<Product, int[]> promotionOrders = new PromotionHandler(promotionManager, inputView).checkPromotion(orders);
             int membershipDiscountRate = new MembershipHandler(inputView).membershipDiscountRate();
             Receipt receipt = new BillingCalculator(promotionOrders).calculateAllProduct(promotionManager, membershipDiscountRate);
-            //영수증 발행 + stock 반영
+            new ReceiptPrinter(receipt, promotionOrders).printReceipt();
             isContinue = false; //진행 여부 확인
         }
     }

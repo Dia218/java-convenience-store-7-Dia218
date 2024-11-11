@@ -14,38 +14,25 @@ public class Receipt {
         this.membershipPrice = membershipPrice;
         this.finalPrice = finalPrice;
     }
-}
 
-class ReceiptPrinter {
-    private static final String CONVENIENCE_LINE = "\n==============W 편의점================\n";
-    private static final String PROMOTION_LINE = "=============증\t정===============\n";
-    private static final String PLAIN_LINE = "====================================\n";
-
-    static void printReceipt(Receipt receipt) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        appendTop(stringBuilder);
-        appendMiddle(stringBuilder);
-        appendBottom(stringBuilder);
-
-        printReceiptContent(stringBuilder);
+    public int getQuantityAll() {
+        return quantityAll;
     }
 
-    static private void appendTop(StringBuilder stringBuilder) {
-        stringBuilder.append(CONVENIENCE_LINE);
-        //
-    }
-    static private void appendMiddle(StringBuilder stringBuilder) {
-        stringBuilder.append(PROMOTION_LINE);
-        //
-    }
-    static private void appendBottom(StringBuilder stringBuilder) {
-        stringBuilder.append(PLAIN_LINE);
-        //
+    public int getPriceAll() {
+        return priceAll;
     }
 
-    static private void printReceiptContent(StringBuilder stringBuilder) {
-        System.out.println(stringBuilder.toString());
+    public int getFreePriceAll() {
+        return freePriceAll;
+    }
+
+    public int getMembershipPrice() {
+        return membershipPrice;
+    }
+
+    public int getFinalPrice() {
+        return finalPrice;
     }
 
 }

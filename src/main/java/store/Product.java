@@ -1,8 +1,10 @@
 package store;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
+
+import static store.view.FormatConverter.formatPrice;
+import static store.view.FormatConverter.formatQuantity;
 
 public class Product {
     private final String name;
@@ -15,10 +17,10 @@ public class Product {
         this.name = name;
         this.price = price;
 
-        if(promotionInfo == null) {
+        if(promotionInfo.equals("null")) {
             this.vanillaQuantity = quantity;
         }
-        if(promotionInfo != null) {
+        if(!promotionInfo.equals("null")) {
             this.promotionInfo = promotionInfo;
             this.promotionQuantity = quantity;
         }
@@ -72,9 +74,9 @@ public class Product {
     public String getInfoForDisplay() {
         String info = "";
         if(promotionInfo != null) {
-            info += "- " + name + " " + formatPrice() + " " + formatQuantity(promotionQuantity) + " " + promotionInfo + "\n";
+            info += "- " + name + " " + formatPrice(price) + " " + formatQuantity(promotionQuantity) + " " + promotionInfo + "\n";
         }
-        info += "- " + name + " " + formatPrice() + " " + formatQuantity(vanillaQuantity);
+        info += "- " + name + " " + formatPrice(price) + " " + formatQuantity(vanillaQuantity);
         return info;
     }
 
@@ -112,16 +114,6 @@ public class Product {
             }
         }
         return null;
-    }
-
-    private String formatPrice() {
-        DecimalFormat decimalFormatter = new DecimalFormat("#,###");
-        return decimalFormatter.format(price) + "원";
-    }
-
-    private String formatQuantity(int quantity) {
-        if(quantity == 0) { return "재고 없음"; }
-        return quantity + "개";
     }
 
     private void reducePromotionQuantity(int orderPromotionQuantity) {

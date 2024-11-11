@@ -23,8 +23,9 @@ public class BillingCalculator {
 
             quantityAll += (productAllQuantity = calculateProductAllQuantity(quantityList));
             priceAll += product.getPriceForQuantity(productAllQuantity);
-            freePriceAll += product.getPriceForQuantity(
-                    promotionManager.getPromotionFreeQuantity(product, quantityList[1]));
+            if(promotionManager.findPromotionByName(product.getPromotionInfo()) != null) {
+                freePriceAll += product.getPriceForQuantity(promotionManager.getPromotionFreeQuantity(product, quantityList[1]));
+            }
 
             unPromotionPriceAll += product.getPriceForQuantity(quantityList[0]);
         }
