@@ -43,6 +43,11 @@ public class Product {
         return Objects.hash(name, price);
     }
 
+    public static void updateProduct(List<Product> productList, Product product) {
+        Product prevProduct = findPrevProduct(productList, product);
+        updateInfo(product, prevProduct);
+    }
+
     public static Product findByName(List<Product> productList, String name) {
         for (Product product : productList) {
             if (product.name.equals(name)) {
@@ -62,11 +67,6 @@ public class Product {
 
     public int getStockPromotionQuantity() {
         return promotionQuantity;
-    }
-
-    public static void updateProduct(List<Product> productList, Product product) {
-        Product prevProduct = findPrevProduct(productList, product);
-        updateInfo(product, prevProduct);
     }
 
     public String getInfoForDisplay() {
@@ -89,6 +89,10 @@ public class Product {
             orderQuantity -= orderPromotionQuantity;
             reduceVanillaQuantity(orderQuantity);
         }
+    }
+
+    public int getPriceForQuantity(int quantity) {
+        return quantity * price;
     }
 
     private static void updateInfo(Product product, Product prevProduct) {

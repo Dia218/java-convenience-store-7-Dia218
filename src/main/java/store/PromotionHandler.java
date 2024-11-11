@@ -5,7 +5,7 @@ import store.view.InputView;
 
 import java.util.HashMap;
 
-import static store.view.ErrorMessages.ERROR_ORDER_ETC;
+import static store.view.ErrorMessages.ERROR_INPUT_ETC;
 import static store.view.ServiceMessages.CHECK_IGNORE_PROMOTION;
 import static store.view.ServiceMessages.CHECK_OFFER_PROMOTION;
 
@@ -18,51 +18,68 @@ public class PromotionHandler {
         this.inputView = inputView;
     }
 
-    public void checkPromotion(HashMap<Product, Integer> orders) {
+    public HashMap<Product, int[]> checkPromotion(HashMap<Product, Integer> orders) {
+        HashMap<Product, int[]> promotionOrders = new HashMap<>();
+
         for(Product product : orders.keySet()) {
-            checkOrderPromotion(product, orders);
+            listOrderPromotion(product, orders, promotionOrders);
         }
+
+        return promotionOrders;
     }
 
-    private void checkOrderPromotion(Product product, HashMap<Product, Integer> orders) {
+    private void listOrderPromotion(Product product, HashMap<Product, Integer> orders, HashMap<Product, int[]> promotionOrders) {
         Promotion promotion = getValidPromotion(product);
-        if (promotion == null) return;
-
-        adjustOrderQuantity(product, orders, promotion);
+        if(promotion == null) {
+            promotionOrders.put(product, new int[]{orders.get(product), 0});
+            return;
+        }
+        promotionOrders.put(product, createQuantityList(orders, product, promotion));
     }
 
-    private void adjustOrderQuantity(Product product, HashMap<Product, Integer> orders, Promotion promotion) {
+    private int[] createQuantityList(HashMap<Product, Integer> orders, Product product, Promotion promotion) {
+        int[] quantityList = new int[]{promotion.calculateUnPromotionQuantity(orders.get(product)),
+                promotion.calculatePromotionQuantity(orders.get(product))};
+
         int misQuantity = getMisQuantity(orders.get(product), product.getStockPromotionQuantity(), promotion);
-        if(misQuantity < 0) {
-            adjustLessOrder(product, orders.get(product), promotion, misQuantity, orders);
+        if(misQuantity < 0) { //buy 만족, get 불만족
+            adjustLessOrder(product, orders.get(product), promotion, misQuantity, quantityList);
         }
-        if(misQuantity > 0) {
-            adjustMuchOrder(product, misQuantity, orders);
+        if(misQuantity > 0) { //1 set 이상 만족, buy 불만족
+            adjustMuchOrder(product, misQuantity, quantityList);
         }
+
+        return quantityList;
     }
 
-    private void adjustLessOrder(Product product, int orderQuantity, Promotion promotion, int misQuantity, HashMap<Product, Integer> orders) {
+    private void adjustLessOrder(Product product, int orderQuantity, Promotion promotion, int misQuantity, int[] quantityList) {
         if(isAvailAddOrder(product, orderQuantity, -misQuantity)) {
-            updateOrder(PromotionAsker.askReceiveDecision(inputView, product.getName(), -misQuantity),
-                    orders, product, orderQuantity + -misQuantity); return;
+            adjustLessQuantity(product, misQuantity, quantityList); //모자란 get 추가하기
+            return;
         }
-        updateOrder(!PromotionAsker.askPurchaseDecision(inputView, product.getName(), promotion.calculateUnPromotionQuantity(orderQuantity)),
-                orders, product, 0);
+        int muchQuantity = promotion.calculateUnPromotionQuantity(orderQuantity);
+        adjustMuchQuantity(product, muchQuantity, quantityList); //남는 buy 버리기
     }
 
-    private void adjustMuchOrder(Product product, int misQuantity, HashMap<Product, Integer> orders) {
-        updateOrder(!PromotionAsker.askPurchaseDecision(inputView, product.getName(),
-                misQuantity), orders, product, 0);
+    private void adjustMuchOrder(Product product, int muchQuantity, int[] quantityList) {
+        adjustMuchQuantity(product, muchQuantity, quantityList); //남는 buy 버리기
+    }
+
+    private void adjustMuchQuantity(Product product, int muchQuantity, int[] quantityList) {
+        quantityList[0] += muchQuantity; quantityList[1] -= muchQuantity;
+        if (!PromotionAsker.askPurchaseDecision(inputView, product.getName(), muchQuantity)) {
+            quantityList[0] = 0; quantityList[1] = 0;
+        }
+    }
+
+    private void adjustLessQuantity(Product product, int misQuantity, int[] quantityList) {
+        if(PromotionAsker.askReceiveDecision(inputView, product.getName(), -misQuantity)) {
+            quantityList[1] += -misQuantity;
+        }
     }
 
     private boolean isAvailAddOrder(Product product, int orderQuantity, int addQuantity) {
         return product.getStockPromotionQuantity() >= addQuantity + orderQuantity;
-    }
-
-    private void updateOrder(boolean requireChange, HashMap<Product, Integer> orders, Product product, int quantity) {
-        if (requireChange) {
-            orders.put(product, quantity);
-        }
     }
 
     private int getMisQuantity(int orderQuantity, int stockPromotionQuantity, Promotion promotion) {
@@ -113,7 +130,7 @@ class PromotionAsker {
 
     private static boolean validAnswer(String answer) {
         if(!answer.equals(YES) && !answer.equals(NO)) {
-            ExceptionHandler.throwException(ERROR_ORDER_ETC);
+            ExceptionHandler.throwException(ERROR_INPUT_ETC);
         }
         return answer.equals(YES);
     }

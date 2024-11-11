@@ -32,6 +32,10 @@ public class Promotion {
         return localDate.isAfter(startDate) && localDate.isBefore(endDate);
     }
 
+    public int calculateFreeQuantity(int targetQuantity) {
+        return (targetQuantity / getPromotionQuantitySet()) * get;
+    }
+
     public int calculatePromotionQuantity(int targetQuantity) {
         return targetQuantity - calculateUnPromotionQuantity(targetQuantity);
     }

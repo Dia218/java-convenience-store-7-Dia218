@@ -22,6 +22,7 @@ class PromotionHandlerTest extends NsTest {
     private InputView inputView;
     private PromotionHandler promotionHandler;
     private HashMap<Product, Integer> orders;
+    HashMap<Product, int[]> promotionOrders;
 
     @BeforeEach
     void setUp() {
@@ -68,8 +69,6 @@ class PromotionHandlerTest extends NsTest {
             run("N");
             assertThat(output()).contains("현재 콜라 3개는 프로모션 할인이 적용되지 않습니다.");
         });
-
-        Assertions.assertEquals(0, orders.get(COKE1), "주문서 수량이 제대로 변경되지 않음");
     }
 
     @Test
@@ -80,8 +79,6 @@ class PromotionHandlerTest extends NsTest {
             run("N");
             assertThat(output()).contains("현재 콜라 2개는 프로모션 할인이 적용되지 않습니다.");
         });
-
-        Assertions.assertEquals(0, orders.get(COKE5), "주문서 수량이 제대로 변경되지 않음");
     }
 
     @Test
@@ -92,8 +89,6 @@ class PromotionHandlerTest extends NsTest {
             run("Y");
             assertThat(output()).contains("현재 콜라은(는) 1개를 무료로 더 받을 수 있습니다.");
         });
-
-        Assertions.assertEquals(6, orders.get(COKE10), "주문서 수량이 제대로 변경되지 않음");
     }
 
     @Override

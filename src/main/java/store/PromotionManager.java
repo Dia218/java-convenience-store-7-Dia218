@@ -15,6 +15,10 @@ public class PromotionManager {
         return Promotion.findByName(promotionList, targetName);
     }
 
+    public int getPromotionFreeQuantity(Product product, int promotionQuantity) {
+        return findPromotionByName(product.getPromotionInfo()).calculateFreeQuantity(promotionQuantity);
+    }
+
     private void initPromotion() {
         List<String> lines = new FileContentReader().readPromotionFile();
         addAllPromotions(lines);

@@ -19,8 +19,9 @@ public class Application {
         while(isContinue) {
             stockManager.displayStock();
             HashMap<Product, Integer> orders = new OrderHandler(stockManager, inputView).receiveOrder();
-            new PromotionHandler(promotionManager, inputView).checkPromotion(orders);
-            //멤버쉽 할인 여부 체크
+            HashMap<Product, int[]> promotionOrders = new PromotionHandler(promotionManager, inputView).checkPromotion(orders);
+            int membershipDiscountRate = new MembershipHandler(inputView).membershipDiscountRate();
+            Receipt receipt = new BillingCalculator(promotionOrders).calculateAllProduct(promotionManager, membershipDiscountRate);
             //영수증 발행 + stock 반영
             isContinue = false; //진행 여부 확인
         }
